@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -73,6 +74,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1171,8 +1173,20 @@ public class MainActivity extends ActionBarActivity
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
                     (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView =
-                    (SearchView) menu.findItem(R.id.action_search).getActionView();
+            final ArrayAdapterSearchView searchView =
+                    (ArrayAdapterSearchView) menu.findItem(R.id.action_search).getActionView();
+
+            searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Bathroom bathroom = searchView.getItemFromAdapter(position);
+                    List<Bathroom> bathroomList = new ArrayList<>();
+                    bathroomList.add(bathroom);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(bathroom.getLocation()), 400, null);
+                    onSearchResults(bathroomList);
+                }
+            });
             searchView.setSearchableInfo(
                     searchManager.getSearchableInfo(getComponentName()));
             return true;
